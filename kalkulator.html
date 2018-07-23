@@ -1,0 +1,206 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css" />    
+        <link rel="stylesheet" type="text/css" href="ionicons.min.css">
+        <script src="https://unpkg.com/ionicons@4.2.2/dist/ionicons.js"></script>
+    </head>
+    
+    <body>
+    <div class="holder">    
+        <h1>TDEE calculator</h1>   
+
+        <section class="basicInfo">
+        <h3>BASIC INFORMATION</h3>
+            <input type="text" id="weight" placeholder='Weight'>
+            <input type="text" id="height" placeholder='Height'>
+            <input type="text" id="age" placeholder='Age'>        
+        </section>
+        <section class="sex">
+        <h3>SEX</h3>    
+            <div id="sex">
+                <label>
+                    <input type="radio" name="sexType" value="female"> 
+                    <ion-icon name="woman"></ion-icon>
+                </label>
+                <label>
+                    <input type="radio" name="sexType" value="male">
+                    <ion-icon name="man"></ion-icon>    
+                </label>
+            </div>
+        </section>    
+        <section class="bodyType">
+        <h3>BODY TYPE</h3>      
+        
+            <div id="morphic">
+                <label>
+                    <input type="radio" name="bodyType" value="900"> 
+                    <img src="ectomorph2.png">    
+                </label>
+                <label>
+                    <input type="radio" name="bodyType" value="450">
+                    <img src="mesomorph.png">        
+                </label>
+                <label>
+                    <input type="radio" name="bodyType" value="300">
+                    <img src="endomorph.png">    
+                </label>                
+            </div>
+            
+            
+          <!--  
+            
+            <select id="morphic">
+                <option value="300">Endomorph</option>
+                <option value="450">Mesomorph</option>
+                <option value="900">Ectomorph</option>
+            </select> 
+
+
+            -->
+            
+         </section>  
+
+        <br>  
+
+        <section class="trainingType">
+        <h3>DAILY ACTIVITIES</h3>
+        Days in week: <input type="number" id="days">
+        Minutes: <input type="number" id="minutes">
+        <!-- EPOC EXCESS POST-exercise oxygen consumption -->
+
+
+            <br>
+        Intensive:
+        <select id="tea">
+            <option value="7">Light activity</option>
+            <option value="8">Active</option>
+            <option value="9">Very active</option>
+        </select>    
+
+        </section>    
+        <br>
+
+
+        <br> 
+
+        <section class="addInfo">    
+        <h3>ADDITIONAL INFORMATIONS</h3>
+        TEF:
+        <select id="tef">
+            <option value="0.06">6%</option>    
+            <option value="0.07">7%</option>    
+            <option value="0.08">8%</option>    
+            <option value="0.09">9%</option>    
+            <option value="0.1">10%</option>    
+        </select>    
+
+        EPOC:
+            <select id="epoc">
+                <option value="0.04">4%</option>
+                <option value="0.05">5%</option>
+                <option value="0.06">6%</option>
+                <option value="0.07">7%</option>    
+            </select>   
+            <br>
+        </section>
+        <button onclick = "bmi()">Calculate BMR</button>    
+        <br>    
+            <br> 
+        Result: <input type="text" id="result"/>    
+        </div>
+    </body>
+
+   
+</html>
+
+
+
+
+
+<script>
+    function bmi() {
+          let weight = parseInt(document.getElementById('weight').value); 
+          let height = parseInt(document.getElementById('height').value); 
+          let age = parseInt(document.getElementById('age').value);
+          let plec = document.querySelector('input[name="sexType"]:checked').value;
+        
+          let bmr =  ((9.99 * weight) + (6.25 * height) - (4.92 * age)); 
+        let tef = parseFloat(document.getElementById('tef').value);
+          //let bmr = (plec ==='male' ? bmrStatic + 5 : bmrStatic - 161);   //bmr
+          
+          if(plec === 'male'){
+              bmr += 5;
+          } else {
+              bmr -= 161
+          }
+        
+          //document.getElementById('result').value = bmr;
+        let days = document.getElementById('days').value;
+        let minutes = document.getElementById('minutes').value;
+        let epoc = parseFloat(document.getElementById('epoc').value);
+        let tea = document.getElementById('tea').value;
+        let morphic = parseInt(document.querySelector('input[name="bodyType"]:checked').value);
+        
+        
+        
+        
+        
+    //function training() {
+        let trainingVal = ((days * minutes * tea) + (days * (epoc * bmr)))/7; 
+
+        let neat = bmr + trainingVal + morphic;
+                        //document.getElementById('result').value = neat;
+
+        
+       let tdee =Math.round( neat + (neat*tef));
+                        document.getElementById('result').value = tdee + ' kcal';
+    //}
+    }
+    
+
+     
+/*
+Żeby wyliczyć TDEE = BMR + TEA + TEF + NEAT
+
+1. Obliczamy BMR
+2. Obliczamy TEA trening siłowy/aerobowy
+3. BMR + TEA
+4. BMR + TEA + NEAT (bodytype endo,ecto,meso - morphic)
+5. BMR + TEA + NEAT + TEF (efekt termiczny pożywienia 6-10%)
+    
+    intensive = [7,8,9]
+    epoc calAfter = [0.04, 0.05, 0.06, 0.07]
+    bodyType = [300,450,800]
+    thermic = [0.06,0.07,0.08,0.09,0.1]
+*/
+  
+/*    
+let BMI = function(weight, height, years, sex, days, minutes, intensive, calAfter, bodyType, thermic) {
+    
+    this.weight = weight;
+    this.height = height;
+    this.years = years;
+    this.sex = sex["male","female"];
+    this.days = days;
+    this.minutes = minutes; 
+    this.intensive = intensive;
+    this.calAfter = calAfter;
+    this.bodyType = bodyType;
+    this.thermic = thermic;
+    
+    this.basicMetaRatio = function() {
+         let bmrStatic = ((9.99 * weight) + (6.25 * height) - (4.92 * years)); 
+         let bmr = (sex =="male" ? bmrStatic + 5 : bmrStatic - 161); 
+            let EPOC = days * (calAfter * bmr);
+            let training = ((days * minutes * intensive) + EPOC)/7;   
+            let NEAT = bmr + training + bodyType;
+            let TEF = NEAT + (NEAT*thermic);
+        console.log(TEF);
+    }  
+}
+
+let dawid = new BMI(105, 185, 23, 'male', 0, 0, 0, 0.06, 300, 0.06);
+    
+dawid.basicMetaRatio();
+*/
+</script>
